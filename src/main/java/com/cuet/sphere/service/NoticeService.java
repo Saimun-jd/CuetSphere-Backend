@@ -21,6 +21,9 @@ public class NoticeService {
     @Autowired
     private WebSocketService webSocketService;
     
+    @Autowired
+    private S3Service s3Service;
+    
     public NoticeResponse createNotice(NoticeRequest noticeRequest, User sender) throws UserException {
         // Check if sender is CR
         if (!sender.isCR()) {
@@ -89,6 +92,24 @@ public class NoticeService {
         }
         
         return convertToResponse(notice);
+    }
+    
+    public void deleteNotice(Long noticeId, User user) throws UserException {
+        Notice notice = noticeRepository.findById(noticeId)
+            .orElseThrow(() -> new UserException("Notice not found"));
+        
+        // Check if user is the sender of the notice
+        if (!notice.getSender().getId().equals(user.getId())) {
+            throw new UserException("Access denied: You can only delete your own notices");
+        }
+        
+        // Delete the attachment file from S3 if it exists
+        if (notice.getAttachment() != null && !notice.getAttachment().isEmpty()) {
+            s3Service.deleteFile(notice.getAttachment());
+        }
+        
+        // Delete the notice from database
+        noticeRepository.delete(notice);
     }
     
     private NoticeResponse convertToResponse(Notice notice) {
