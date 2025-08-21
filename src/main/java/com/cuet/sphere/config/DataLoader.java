@@ -3,9 +3,12 @@ package com.cuet.sphere.config;
 import com.cuet.sphere.model.Department;
 import com.cuet.sphere.model.Course;
 import com.cuet.sphere.model.Semester;
+import com.cuet.sphere.model.User;
 import com.cuet.sphere.repository.DepartmentRepository;
 import com.cuet.sphere.repository.CourseRepository;
 import com.cuet.sphere.repository.SemesterRepository;
+import com.cuet.sphere.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -24,6 +27,12 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private SemesterRepository semesterRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -35,6 +44,12 @@ public class DataLoader implements CommandLineRunner {
         
         // Load courses
         loadCourses();
+        
+        // Load admin user
+        loadAdminUser();
+        
+        // Create notices table
+        createNoticesTable();
         
         System.out.println("✅ Database initialized with sample data!");
     }
@@ -353,5 +368,34 @@ public class DataLoader implements CommandLineRunner {
         course.setCourseName(name);
         course.setDepartment(department);
         return course;
+    }
+    
+    private void loadAdminUser() {
+        if (userRepository.count() == 0) {
+            User adminUser = new User();
+            adminUser.setFullName("System Administrator");
+            adminUser.setEmail("admin@cuet.ac.bd");
+            adminUser.setPassword(passwordEncoder.encode("asdf"));
+            adminUser.setRole(User.Role.SYSTEM_ADMIN);
+            adminUser.setBatch("00");
+            adminUser.setDepartment("00");
+            adminUser.setStudentId("000");
+            adminUser.setHall("Admin Hall");
+            adminUser.setBio("System Administrator for CUET Sphere");
+            adminUser.setIsActive(true);
+            
+            userRepository.save(adminUser);
+            System.out.println("👤 Created admin user: admin@cuet.ac.bd");
+        }
+    }
+    
+    private void createNoticesTable() {
+        try {
+            // This will be handled by JPA/Hibernate automatically
+            // But we can add some logging to confirm the table exists
+            System.out.println("📢 Notices table will be created by JPA/Hibernate if it doesn't exist");
+        } catch (Exception e) {
+            System.err.println("⚠️ Warning: Could not verify notices table: " + e.getMessage());
+        }
     }
 }

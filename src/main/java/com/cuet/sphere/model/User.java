@@ -49,6 +49,12 @@ public class User {
     @Column(name = "u_profile_img_url")
     private String profileImageUrl = null;
     
+    @Column(name = "u_profile_picture")
+    private String profilePicture = null;
+    
+    @Column(name = "u_background_image")
+    private String backgroundImage = null;
+    
     @Column(name = "u_created_at")
     private LocalDateTime createdAt;
     
@@ -76,5 +82,23 @@ public class User {
     // Method to check if user is CR
     public boolean isCR() {
         return Role.CR.equals(this.role);
+    }
+    
+    // Getter and setter for profilePicture
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+    
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+    
+    // Getter and setter for backgroundImage
+    public String getBackgroundImage() {
+        return backgroundImage;
+    }
+    
+    public void setBackgroundImage(String backgroundImage) {
+        this.backgroundImage = backgroundImage;
     }
 } 

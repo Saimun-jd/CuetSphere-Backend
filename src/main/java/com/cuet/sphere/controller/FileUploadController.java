@@ -43,6 +43,40 @@ public class FileUploadController {
         }
     }
 
+    @PostMapping("/profile")
+    public ResponseEntity<FileUploadResponse> uploadProfilePicture(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("type") String type) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(FileUploadResponse.error("File is empty"));
+            }
+
+            // Check file size (limit to 5MB for profile pictures)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body(FileUploadResponse.error("File size exceeds 5MB limit"));
+            }
+
+            // Check file type (only images for profile pictures)
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest().body(FileUploadResponse.error("Only image files are allowed for profile pictures"));
+            }
+
+            // Generate a unique filename based on type and timestamp
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = originalFilename != null ? 
+                originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
+            String filename = type + "_" + System.currentTimeMillis() + fileExtension;
+
+            String fileUrl = s3Service.uploadFile(file, filename);
+            return ResponseEntity.ok(FileUploadResponse.success(fileUrl));
+            
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(FileUploadResponse.error("Failed to upload profile picture: " + e.getMessage()));
+        }
+    }
+
     private boolean isAllowedFileType(String contentType) {
         return contentType.startsWith("application/pdf") ||
                contentType.equals("application/msword") ||

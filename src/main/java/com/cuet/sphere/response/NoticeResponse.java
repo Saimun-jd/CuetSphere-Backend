@@ -10,6 +10,7 @@ public class NoticeResponse {
     private Long noticeId;
     private String department;
     private String batch;
+    private String title;
     private String message;
     private String attachment;
     private NoticeType noticeType;

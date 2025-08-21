@@ -189,8 +189,14 @@ public class AuthController {
 
                 String fullName = dbUser.getFullName();
                 String role = dbUser.getRole() != null ? dbUser.getRole().name() : "STUDENT";
+                String batch = dbUser.getBatch();
+                String department = dbUser.getDepartment();
+                String bio = dbUser.getBio();
+                String hall = dbUser.getHall();
+                String studentId = dbUser.getStudentId();
 
-                AuthResponse authResponse = new AuthResponse(token, true, "Signin successful", email, fullName, role);
+                AuthResponse authResponse = new AuthResponse(token, true, "Signin successful", email, fullName, role, 
+                                                          batch, department, bio, hall, studentId);
 
                 System.out.println("=== SIGNIN SUCCESSFUL ===");
                 return new ResponseEntity<>(authResponse, HttpStatus.OK);

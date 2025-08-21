@@ -21,6 +21,9 @@ public class Notice {
     @Column(name = "N_batch", nullable = false)
     private String batch;
     
+    @Column(name = "N_title", nullable = false)
+    private String title;
+    
     @Column(name = "N_message", nullable = false, columnDefinition = "TEXT")
     private String message;
     
@@ -44,6 +47,6 @@ public class Notice {
     private User sender;
     
     public enum NoticeType {
-        GENERAL, URGENT, ACADEMIC, EVENT, OTHER
+        GENERAL, URGENT, ACADEMIC, EVENT
     }
 } 
